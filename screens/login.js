@@ -1,8 +1,9 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import axios from "axios";
 import { useState } from "react";
 import { saveUser, getUser } from "./components/storage";
+import {jwtDecode} from 'jwt-decode'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -16,22 +17,56 @@ const Login = () =>{
 
         const handleChange = (name, value) => setLoginForm(prevState => ({ ...prevState, [name]: value }));
 
+        const verifyLog = async () => {
+            try {
+                const value = await AsyncStorage.getItem('isLoggedIn')
+                if(value == 'true'){
+                    navigation.navigate('Profile');
+                }
+            } catch (error) {
+                
+            }
+        
+        }
+
         const handleLogin = async() =>{
             alert("Trying to connect","Please wait");
             if(loginForm.clubId != '' && loginForm.password != ''){
-                const response = await axios.post("https://tall-debonair-danger.glitch.me/login",loginForm );
-                if(response.status == 200){
-                    console.log(response.data);
-                    saveUser(response.data);
-                    const user = getUser();
-                    const username = user.username;
-                    console.log(`Bienvenue ${username}`);
-                    navigation.navigate('Acceuil')
+               try {
+                const response = await axios.post("https://tall-debonair-danger.glitch.me/login",loginForm, { withCredentials: true } );
+                if(response.status === 200){
+                    const userInfo = response.data.userInfo;
+                    const id = userInfo.id;
+                    const username = userInfo.username;
+                    const mail = userInfo.mail;
+                    const role = userInfo.role;
+
+                    if(role == 'Admin'){
+                        await AsyncStorage.setItem('isAdmin', 'true');
+                        alert('Connexion reussie','Bienvenue '+username+' vous etes un admin');
+                    }
+
+                    alert("Connexion reussie","Bienvenue "+username);
+                    await AsyncStorage.setItem('id', id);
+                    await AsyncStorage.setItem('username', username);
+                    await AsyncStorage.setItem('mail', mail);
+                    await AsyncStorage.setItem('role', role);
+                    
+                    
+                    await AsyncStorage.setItem('isLoggedIn', 'true');
+                    navigation.navigate('Profile')
                 }
+               } catch (error) {
+                alert(error);
+               }
             }else{
                 alert("Connexion échouée","Veuillez remplir tous les formulaires")
             }
         }
+
+        useFocusEffect(()=>{
+            verifyLog();
+        }); 
 
     return(
         <View>

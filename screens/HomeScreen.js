@@ -14,7 +14,7 @@ const HomeScreen = () => {
     return (
         <View>
             <Text style={style.homeScreenTitle}>Bienvenue</Text>
-            <Button onPress={()=>{navigation.navigate('Login')}} title="Hi"/>
+            <Button onPress={()=>{navigation.navigate('Connexion')}} title="Hi"/>
 
         </View>
     );
