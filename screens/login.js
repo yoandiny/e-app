@@ -2,8 +2,6 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import axios from "axios";
 import { useState } from "react";
-import { saveUser, getUser } from "./components/storage";
-import {jwtDecode} from 'jwt-decode'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -21,7 +19,7 @@ const Login = () =>{
             try {
                 const value = await AsyncStorage.getItem('isLoggedIn')
                 if(value == 'true'){
-                    navigation.navigate('Profile');
+                    navigation.navigate('Acceuil');
                 }
             } catch (error) {
                 
@@ -40,21 +38,26 @@ const Login = () =>{
                     const username = userInfo.username;
                     const mail = userInfo.mail;
                     const role = userInfo.role;
-
-                    if(role == 'Admin'){
-                        await AsyncStorage.setItem('isAdmin', 'true');
-                        alert('Connexion reussie','Bienvenue '+username+' vous etes un admin');
+                    if(id.startsWith('STD')){
+                        alert("Connexion échouée", "Votre compte n'a pas encore été vérifié, veuillez contacter un admin");
+                    }else{
+                        if(role == 'Admin'){
+                            await AsyncStorage.setItem('isAdmin', 'true');
+                            alert('Connexion reussie','Bienvenue '+username+' vous etes un admin');
+                        }
+    
+                        alert("Connexion reussie","Bienvenue "+username);
+                        await AsyncStorage.setItem('id', id);
+                        await AsyncStorage.setItem('username', username);
+                        await AsyncStorage.setItem('mail', mail);
+                        await AsyncStorage.setItem('role', role);
+                        
+                        
+                        await AsyncStorage.setItem('isLoggedIn', 'true');
+                        navigation.navigate('Profile')
                     }
 
-                    alert("Connexion reussie","Bienvenue "+username);
-                    await AsyncStorage.setItem('id', id);
-                    await AsyncStorage.setItem('username', username);
-                    await AsyncStorage.setItem('mail', mail);
-                    await AsyncStorage.setItem('role', role);
                     
-                    
-                    await AsyncStorage.setItem('isLoggedIn', 'true');
-                    navigation.navigate('Profile')
                 }
                } catch (error) {
                 alert(error);
