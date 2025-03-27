@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import 'react-native-reanimated';
 import { createDrawerNavigator, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
-import Ionicon from 'react-native-vector-icons/Ionicons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StyleSheet,Image, TouchableOpacity  } from 'react-native';
 import HomeScreen from './HomeScreen';
@@ -12,6 +10,8 @@ import Register from './register';
 import ClubInfo from './clubInfo';
 import AdminDash from './adminDashboard';
 import Chat from './chat'
+import FactionChoose from './profile_components/factionChoose';
+import YourFaction from './yourFaction';
 
 
 const Navbar = () => {
@@ -35,11 +35,13 @@ const Navbar = () => {
       </TouchableOpacity>, headerTitleAlign: 'center'} } initialRouteName="Connexion">
         <Drawer.Screen name="Acceuil" component={HomeScreen} />
         <Drawer.Screen name="Profile" component={Profile} />
-        <Drawer.Screen name='Info sur le club' component={ClubInfo} />
+        <Drawer.Screen name='Vos Factions' component={YourFaction}/>
         <Drawer.Screen name='Chat' component={Chat} />
         <Drawer.Screen name='Inscription' component={Register} options={{drawerItemStyle:style.invisibleMenu}} />
         <Drawer.Screen name='Connexion' component={Login} options={{drawerItemStyle:style.invisibleMenu}} />
         <Drawer.Screen name='adminDashboard' component={AdminDash} options={{drawerItemStyle:style.invisibleMenu}} />
+        <Drawer.Screen name='factionChoose' component={FactionChoose} options={{drawerItemStyle: style.invisibleMenu}}/>
+        
         
       </Drawer.Navigator>
 
@@ -61,8 +63,8 @@ const style = StyleSheet.create({
     display: 'none'
   },
   logo:{
-    width: 100,
-    height: 100
+    width: 60,
+    height: 60
   }
 });
 

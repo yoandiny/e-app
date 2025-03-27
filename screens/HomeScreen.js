@@ -3,6 +3,9 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import axios from "axios";
+import { sendGlobalNotification } from "./components/sendNotification";
+
+
 
 
 
@@ -12,6 +15,8 @@ const HomeScreen = () => {
     const [username, setUsername] = useState('');
     const [content, setContent] = useState('');
     const [allPost, setAllPost] = useState([]);
+    
+    
     
    
     const navigation = useNavigation();
@@ -39,9 +44,17 @@ const HomeScreen = () => {
             if(res.status == 200){
                 Alert.alert("Publication effectuée");
                 setContent('');
+                getAllPost();
+
+                const notification = {
+                    title: 'Nouvelle publication !',
+                    body: `${username} à fait une nouvelle publication`
+                }
+                sendGlobalNotification(notification.title, notification.body);
+
                
                 
-                navigation.navigate("Acceuil");
+                
             }
         } catch (error) {
             
@@ -62,7 +75,9 @@ const HomeScreen = () => {
     useFocusEffect(()=>{
         getUsername();
         getAllPost();
-    })
+    });
+
+    
 
 
     return (
@@ -71,6 +86,7 @@ const HomeScreen = () => {
                 <TextInput onChangeText={handleChange} value={content} style={style.publishForm} placeholder="Quoi de neuf"/>
                 <TouchableOpacity onPress={handlePublish} style={style.publishButton}><Text>Publier</Text></TouchableOpacity>
             </View>
+            
             
             <FlatList data={allPost} keyExtractor={(item) => item.pub_id.toString()} renderItem={({item}) =>(
                 <View style={style.postCard}>

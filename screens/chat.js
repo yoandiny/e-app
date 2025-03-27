@@ -1,12 +1,22 @@
-import { Text, View } from 'react-native'
+import { Text, View, StyleSheet } from 'react-native'
 import React, { Component } from 'react'
 
 export default class Chat extends Component {
   render() {
     return (
-      <View>
-        <Text>hat</Text>
+      <View style={style.main}>
+        <View>
+
+        </View>
       </View>
     )
   }
 }
+
+const style = StyleSheet.create({
+  main:{
+      backgroundColor: '#040575',
+      height: '100%'
+  },
+
+});

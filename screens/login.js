@@ -3,6 +3,36 @@ import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from "reac
 import axios from "axios";
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
+      console.log('Permission refusée pour les notifications !');
+      return;
+    }
+
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log("Token Expo :", token);
+  } else {
+    console.log('Les notifications push ne fonctionnent pas sur un émulateur.');
+  }
+
+  return token;
+}
+
+
 
 
 const Login = () =>{
@@ -12,13 +42,45 @@ const Login = () =>{
             clubId: '',
             password: ''
         });
+        const [expoPushToken, setExpoPushToken] = useState('');
+        const [userId, setUserId] = useState('');
 
         const handleChange = (name, value) => setLoginForm(prevState => ({ ...prevState, [name]: value }));
+
+        const getId = async () => {
+            try {
+              const value = await AsyncStorage.getItem('id');
+              if (value) {
+                setUserId(value);  // Stocker l'ID utilisateur dans le state
+              }
+            } catch (error) {
+              console.error('Erreur de récupération de l\'ID utilisateur:', error);
+            }
+          };
 
         const verifyLog = async () => {
             try {
                 const value = await AsyncStorage.getItem('isLoggedIn')
                 if(value == 'true'){
+                    getId();
+                    registerForPushNotificationsAsync().then(token => {
+                        if (token) {
+                          setExpoPushToken(token);
+                  
+                          if (userId) {
+                            axios.post('https://tall-debonair-danger.glitch.me/store-token', {
+                              token,
+                              userId, 
+                            })
+                            .then(response => {
+                              console.log('Token enregistré avec succès:', response.data);
+                            })
+                            .catch(error => {
+                              console.error('Erreur lors de l\'enregistrement du token:', error);
+                            });
+                          }
+                        }
+                      });
                     navigation.navigate('Acceuil');
                 }
             } catch (error) {

@@ -8,6 +8,7 @@ import axios from "axios";
 
 
 const Profile = () => {
+
  const [loggedIn, setLoggedIn]= useState('');
  const [role, setRole] = useState('');
  const [id, setId] = useState('');
@@ -20,7 +21,6 @@ const Profile = () => {
     clubId : id,
     group: '',
     phone: '',
-    categorie: ''
  });
 
 
@@ -186,8 +186,12 @@ const Profile = () => {
                 </View>
                 <View style={style.infoCard}>
                 <Ionicons style={style.icon} name="game-controller-outline" size={30}/>
-                <Text style={style.indicationText}>Catégorie de jeu :</Text>
-                <TextInput style={[style.profileForm, {marginLeft: 7,}]} placeholder="ex: Minecraft" value={profileInfo.categorie} onChangeText={(value)=>{handleChange('categorie', value);}}/>
+                <TouchableOpacity onPress={()=>{
+                    navigation.navigate('factionChoose')
+                }}>
+                <Text style={style.indicationText}>Choisir votre faction</Text>
+                </TouchableOpacity>
+                
                 </View>
                 <TouchableOpacity style={style.infoButton} onPress={()=>{handleSubmit()}}>
                     <Text style={style.indicationText}>Enregistrer les informations</Text>
