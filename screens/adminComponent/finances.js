@@ -13,7 +13,7 @@ export const Finance = () => {
     })
 
     const totalBalance = transactions.reduce((acc, transaction) => {
-        return transaction.type === 'Entrée' ? acc + transaction.amount : acc - transaction.amount;
+        return transaction.trans_type == 'Entree' ? acc + transaction.amount : acc - transaction.amount;
     }, 0);
 
     const getAllTransactions = async () => {
@@ -27,8 +27,18 @@ export const Finance = () => {
     
     const addTransaction = async()=>{
         try {
-            const res = await axios.get('https://tall-debonair-danger.glitch.me/addTransaction');
+            for(const data of Object.values(transactionForm)){
+                if(!data){
+                    return alert('Veuillez remplir tous les champs');
+                }else{
+                    if(isNaN(transactionForm.amount)){
+                        return alert('Veuillez saisir un montant valide');
+                    }
+                }
+            }
+            const res = await axios.post('https://tall-debonair-danger.glitch.me/addTransaction', transactionForm);
             if(res.status == 200){
+                alert('Transaction ajoutée');
                 getAllTransactions();
             }
         } catch (error) {
@@ -36,7 +46,25 @@ export const Finance = () => {
         }
     };
 
-    const handleChange = (value) => setTransactionForm(value);
+    const deleteTransaction = async(id)=>{
+        try {
+            const res = await axios.post(`https://tall-debonair-danger.glitch.me/deleteTransaction`, {id: id});
+            if(res.status == 200){
+                alert('Transaction supprimée');
+                getAllTransactions();
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleChange = (field, value) => {
+        setTransactionForm(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+    
 
     useFocusEffect(()=>{
         getAllTransactions();
@@ -56,33 +84,34 @@ export const Finance = () => {
            
             <View style={{display:'flex', flexDirection:'row'}}>
             <View style={[styles.inputContainer,{width: '50%'}]}>
-                            <TextInput
+                                        <TextInput
                                 style={styles.input}
                                 placeholder="Entrée ou Sortie"
                                 placeholderTextColor="#aaa"
                                 value={transactionForm.type}
-                                onChangeText={handleChange}
+                                onChangeText={(text) => handleChange('type', text)}
                             />
                         </View>
 
                 <View style={[styles.inputContainer,{width: '50%'}]}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Montant "
-                                placeholderTextColor="#aaa"
-                                value={transactionForm.amount}
-                                onChangeText={handleChange}
-                            />
+                                        <TextInput
+                            style={styles.input}
+                            placeholder="Montant en Ar "
+                            placeholderTextColor="#aaa"
+                            value={transactionForm.amount}
+                            onChangeText={(text) => handleChange('amount', text)}
+                            keyboardType="numeric"
+                        />
                 </View>
             </View>
             <View style={styles.inputContainer}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Description de la transaction"
-                                placeholderTextColor="#aaa"
-                                value={transactionForm.desc}
-                                onChangeText={handleChange}
-                            />
+                                    <TextInput
+                            style={styles.input}
+                            placeholder="Description de la transaction"
+                            placeholderTextColor="#aaa"
+                            value={transactionForm.desc}
+                            onChangeText={(text) => handleChange('desc', text)}
+                        />
                 </View>
              
 
@@ -98,8 +127,8 @@ export const Finance = () => {
                 renderItem={({ item }) => (
                     <View style={styles.transactionCard}>
                         <Text style={styles.transactionText}>{item.trans_desc}</Text>
-                        <Text style={[styles.transactionAmount, item.trans_type === 'Entrée' ? styles.positive : styles.negative]}>
-                            {item.type === 'Entrée' ? '+' : '-'} {item.amount.toLocaleString()} Ar
+                        <Text style={[styles.transactionAmount, item.trans_type === 'Entree' ? styles.positive : styles.negative]}>
+                            {item.trans_type === 'Entree' ? '+' : '-'} {item.amount.toLocaleString()} Ar
                         </Text>
                         
                         {/* Boutons Modifier & Supprimer */}
@@ -107,7 +136,7 @@ export const Finance = () => {
                             <TouchableOpacity style={styles.editButton}>
                                 <Ionicons name="pencil" size={20} color="white" />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.deleteButton}>
+                            <TouchableOpacity onPress={()=>deleteTransaction(item.trans_id)} style={styles.deleteButton}>
                                 <Ionicons name="trash" size={20} color="white" />
                             </TouchableOpacity>
                         </View>

@@ -103,7 +103,7 @@ const Login = () =>{
                     if(id.startsWith('STD')){
                         alert("Connexion échouée", "Votre compte n'a pas encore été vérifié, veuillez contacter un admin");
                     }else{
-                        if(role == 'Admin'){
+                        if(role == 'Admin' || role == 'Trésorier'){
                             await AsyncStorage.setItem('isAdmin', 'true');
                             alert('Connexion reussie','Bienvenue '+username+' vous etes un admin');
                         }

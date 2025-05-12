@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
+import { ScrollView } from "react-native";
+import { useCallback } from "react";
 
 
 
@@ -18,7 +20,7 @@ const Profile = () => {
  const navigation = useNavigation();
  const alert = Alert.alert;
  const [profileInfo, setProfileInfo]= useState({
-    clubId : id,
+    id : '',
     group: '',
     phone: '',
  });
@@ -58,12 +60,16 @@ const Profile = () => {
     const getId = async () => {
         try {
             const value = await AsyncStorage.getItem('id');
-            setId(value);
-            
+            if (value) {
+                setId(value);
+                setProfileInfo(prev => ({ ...prev, id: value }));
+            } else {
+                console.error("ID manquant dans AsyncStorage !");
+            }
         } catch (error) {
-            
+            console.error(error);
         }
-    }
+    };
     
     const getMail = async () => {
         try {
@@ -100,6 +106,17 @@ const Profile = () => {
     
     }
 
+    const getProfileInfo = async () => {
+        try {
+           
+            setUsername(value);
+            const res = await axios.get(`https://tall-debonair-danger.glitch.me/getProfileInfo?username=${value}`);
+            setProfileInfo(res.data[0]);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const handleAdmin = ()=>{
         navigation.navigate('adminDashboard');
     }
@@ -123,6 +140,8 @@ const Profile = () => {
     const handleChange = (name, value) => setProfileInfo(prevState => ({ ...prevState, [name]: value }));
 
     const handleSubmit = async() =>{
+        setProfileInfo[id] = 'JV';
+        alert("Modification en cours","Veuillez patienter")
         const res = await axios.post("https://tall-debonair-danger.glitch.me/update", profileInfo );
         if(res.status == 200){
             alert("Modification reussie","Veuillez recharger la page")
@@ -132,22 +151,23 @@ const Profile = () => {
     }
 
 
-    useFocusEffect(() => {
-        checkLog();
-        verifyLog();
-        getId();
-        getUsername();
-        getMail();
-        getRole();
-        getAdmin();
-        
-    })
+    useFocusEffect(
+        useCallback(() => {
+          checkLog();
+          verifyLog();
+          getId();
+          getUsername();
+          getMail();
+          getRole();
+          getAdmin();
+        }, [])
+      );
   
 
 
 
     return (
-        <View style={style.main}>
+        <ScrollView style={style.main}>
             <View style={style.mainInfoContainer}>
                 <View style={style.imageContainer}>
                 <Image style={style.pdp} source={require('../assets/default_profile.png')}/>
@@ -216,8 +236,9 @@ const Profile = () => {
 
             {isAdmin == 'true'? <TouchableOpacity style={style.infoCard} onPress={()=>{handleAdmin()}}>
             <Ionicons style={style.icon} name="terminal-outline" size={30}/>
-                <Text style={style.indicationText}>Panel Admin</Text>
+                <Text style={style.indicationText}>Panel Staff</Text>
                 </TouchableOpacity>: null}
+
 
             
 
@@ -233,7 +254,7 @@ const Profile = () => {
             
             
            
-        </View>
+        </ScrollView>
     );
 }
 

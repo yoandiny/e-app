@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from 'react-native'
 import React, { Component } from 'react'
 
-export default class Chat extends Component {
+export default class Fees extends Component {
   render() {
     return (
       <View style={style.main}>
