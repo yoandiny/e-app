@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import Dashboard from "./adminComponent/dashboard";
 import { FactionAdmin } from "./adminComponent/factionAdmin";
 import Finances from "./adminComponent/finances";
+import { AdminFees } from "./adminComponent/adminFees";
+
 
 
 
@@ -23,6 +25,9 @@ const AdminDashboard = () =>{
         
             case 3:
                 setAdminScreen(<Finances/>);
+                break;
+            case 4:
+                setAdminScreen(<AdminFees/>);
                 break;
         
             default:
@@ -56,6 +61,11 @@ const AdminDashboard = () =>{
             <TouchableOpacity onPress={()=>handleAdmin(3)}>
                 <Text style={style.text}>
                     Trésorerie
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>handleAdmin(4)}>
+                <Text style={style.text}>
+                    Cotisations
                 </Text>
             </TouchableOpacity>
 

@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from "r
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
+import { Picker } from "@react-native-picker/picker";
+
 
 export const Finance = () => {
     const [transactions, setTransactions] = useState([]);
@@ -84,13 +86,14 @@ export const Finance = () => {
            
             <View style={{display:'flex', flexDirection:'row'}}>
             <View style={[styles.inputContainer,{width: '50%'}]}>
-                                        <TextInput
-                                style={styles.input}
-                                placeholder="Entrée ou Sortie"
-                                placeholderTextColor="#aaa"
-                                value={transactionForm.type}
-                                onChangeText={(text) => handleChange('type', text)}
-                            />
+                                        
+                            <Picker
+                                selectedValue={transactionForm.type}
+                                onValueChange={(itemValue) => handleChange('type', itemValue)}
+                            >
+                                <Picker.Item label="Entrée" value="Entree" />
+                                <Picker.Item label="Sortie" value="Sortie" />
+                            </Picker>
                         </View>
 
                 <View style={[styles.inputContainer,{width: '50%'}]}>

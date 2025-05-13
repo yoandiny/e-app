@@ -96,7 +96,7 @@ const Profile = () => {
         try {
             const value = await AsyncStorage.getItem('isLoggedIn')
             if(value == 'true'){
-                navigation.navigate('Profile');
+                
             }else{
                 navigation.navigate('Connexion');
             }
@@ -128,6 +128,7 @@ const Profile = () => {
             const forAdmin = await AsyncStorage.setItem('isAdmin', 'false');
             setIsAdmin(forAdmin);
             navigation.navigate('Profile');
+            verifyLog();
         } catch (error) {
             console.error(error);
         }
@@ -219,10 +220,7 @@ const Profile = () => {
 
             <Text style={style.infoTitle}>Utilitaires :</Text>
 
-            <TouchableOpacity onPress={()=>{handleMaintenance();}} style={style.infoCard}>
-                <Ionicons style={style.icon} name="cloud-upload-outline" size={30}/>
-                <Text style={style.indicationText}>Mettre à jour l'application</Text>
-            </TouchableOpacity>
+            
 
             <TouchableOpacity onPress={()=>{handleMaintenance();}} style={style.infoCard}>
                 <Ionicons style={style.icon} name="bar-chart-outline" size={30}/>

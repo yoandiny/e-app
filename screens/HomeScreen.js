@@ -21,6 +21,22 @@ const HomeScreen = () => {
    
     const navigation = useNavigation();
 
+    const verifyLog = async () => {
+            try {
+                const value = await AsyncStorage.getItem('isLoggedIn')
+                if(value == 'true'){
+                    
+                }else{
+                    navigation.navigate('Connexion');
+                }
+            } catch (error) {
+                
+            }
+        
+        }
+    
+        
+
  
     const getUsername = async () => {
         try {
@@ -75,6 +91,7 @@ const HomeScreen = () => {
     useFocusEffect(()=>{
         getUsername();
         getAllPost();
+        verifyLog();
     });
 
     

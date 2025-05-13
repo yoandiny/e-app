@@ -1,12 +1,14 @@
 import { Text, View, StyleSheet, Image } from 'react-native'
 import React, { useState } from 'react'
-import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import axios from 'axios';
 import { FlatList } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 export const YourFaction= ()=>   {
 
+     const navigation = useNavigation();
     const [myFactions, setMyFactions] = useState([]);
     const [studentId, setStudentId] = useState('');
 
@@ -30,11 +32,26 @@ export const YourFaction= ()=>   {
       }
     };
 
+    const verifyLog = async () => {
+        try {
+            const value = await AsyncStorage.getItem('isLoggedIn')
+            if(value == 'true'){
+                
+            }else{
+                navigation.navigate('Connexion');
+            }
+        } catch (error) {
+            
+        }
+    
+    }
+
     
   
     useFocusEffect(()=>{
       getId();
       getMyFactions();
+      verifyLog();
   
     })
     return (
